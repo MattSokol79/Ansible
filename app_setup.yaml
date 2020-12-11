@@ -1,0 +1,81 @@
+# This yaml file automatically sets up the App on the host machine
+
+---
+
+# Where we're installing the files
+- hosts: app_host
+  gather_facts: yes # Collects info and returns it to you after playbook is run
+  become: true # sudo
+
+  # Setup the app
+  tasks: 
+  # Syncing app folder into the machine
+  - name: Sync app folder
+    synchronize:
+      src: /home/ubuntu/app
+      dest: /home/ubuntu/
+
+  - name: Sync environment folder
+    synchronize:
+      src: /home/ubuntu/environment
+      dest: /home/ubuntu/
+
+  - name: Update sources list
+    apt:
+      upgrade: yes
+      update_cache: yes
+  
+  - name: Install git
+    apt:
+      pkg: git 
+      state: present
+      
+  - name: Install software properties
+    command: apt install software-properties-common -y
+    ignore_errors: true
+
+  - name: Download nodejs dependencies from the web
+    shell: curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+    ignore_errors: true
+
+  - name: Install nodejs
+    apt: 
+      pkg: nodejs 
+      state: present
+
+  - name: Install nginx
+    apt: 
+      pkg: nginx 
+      state: present
+  
+  - name: Install npm
+    shell: npm install
+
+  - name: Install pm2
+    npm:
+      name: pm2
+      global: yes
+
+  - name: Remove old nginx file
+    file:
+      path: /etc/nginx/sites-available/default
+      state: absent
+
+  - name: Copy in new default file into sites-available
+    copy: 
+      src: /home/ubuntu/environment/app/nginx.default 
+      dest: /etc/nginx/sites-available/default
+
+  - name: Restart nginx
+    service:
+      name: nginx
+      state: restarted
+
+  - name: Setup the app
+    shell: |
+      cd /home/ubuntu/app
+      sudo npm install
+      sudo pm2 kill
+      sudo pm2 start app.js
+    ignore_errors: true
+  
