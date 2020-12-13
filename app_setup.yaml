@@ -6,6 +6,13 @@
 - hosts: app_host
   gather_facts: yes # Collects info and returns it to you after playbook is run
   become: true # sudo
+  vars:
+    db_address: "172.31.35.17" # Private IP of DB host instance
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
 
   # Setup the app
   tasks: 
@@ -29,7 +36,7 @@
     apt:
       pkg: git 
       state: present
-      
+  
   - name: Install software properties
     command: apt install software-properties-common -y
     ignore_errors: true
@@ -42,12 +49,12 @@
     apt: 
       pkg: nodejs 
       state: present
-
+  
   - name: Install nginx
     apt: 
       pkg: nginx 
       state: present
-  
+
   - name: Install npm
     shell: npm install
 
@@ -65,17 +72,30 @@
     copy: 
       src: /home/ubuntu/environment/app/nginx.default 
       dest: /etc/nginx/sites-available/default
+    notify:
+    - Restart Nginx
 
-  - name: Restart nginx
-    service:
-      name: nginx
-      state: restarted
+  - name: Set db host as global variable in .bashrc
+    lineinfile:
+      path: /home/ubuntu/.bashrc
+      line: export DB_HOST={{ db_address }}
+    become: true
 
-  - name: Setup the app
+  - name: Deletes node_modules and package-lock.json to make seeds work
+    file:
+      path:
+        - /home/ubuntu/app/node_modules
+        - /home/ubuntu/app/package-lock.json
+      state: absent
+
+  - name: npm install again to ensure seeds work
+    shell:
+      chdir: /home/ubuntu/app
+      cmd: npm install
+
+  - name: Run the app
     shell: |
-      cd /home/ubuntu/app
-      sudo npm install
       sudo pm2 kill
-      sudo pm2 start app.js
-    ignore_errors: true
-  
+      sudo DB_HOST={{ db_address}} pm2 start app.js --update-env
+    args:
+      chdir: /home/ubuntu/app

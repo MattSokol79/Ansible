@@ -111,7 +111,7 @@ handlers:
       name: pm2
       global: yes
 ```
-  -  How to **create a file**
+  -  How to **create a file** - use file which has many options such as creating links, deleting directories and files and creating files
 ```yaml
 - name: Create files in sites available
   file:
@@ -135,7 +135,7 @@ handlers:
     state: link
 ```
 
-  - **Reverse proxy with ansible** manually
+  - **Reverse proxy with ansible** manually using `blockinfile` which essentially adds a block of text into a file
 ```yaml
 - name: Writing nginx config file reverse proxy
   blockinfile:
@@ -149,10 +149,17 @@ handlers:
         }
       }
 ```
+  - Synchronize is a module which can allow us to sync the folders and files on our machine with another e.g. on aws or vm
+```yaml
+- name: Sync environment folder
+  synchronize:
+    src: /home/ubuntu/environment
+    dest: /home/ubuntu/
+```
 ### Templates
 - The template module can be used to assign variables akin to python OOP polymorphism
 - Can replace certain parts of code with {{variable}} which can be whatever we desire
-- Template files usually have a `.js` extension
+- Template files usually have a `.js` extension i.e. JINJA
 ```yaml
 - hosts: Example
   vars: 
@@ -177,11 +184,16 @@ Friend
 How are you?
 ```
 
+- **Variables**
+
 ### How to run pure shell (bash) commands
 - Become and become_user allow ansible to run certain commands with greater privilages, akin to using sudo
 ```yaml
 - name:
   become: true
   become_user: ubuntu
-  shell: cd ~/
+  shell: |
+    cd ~/
+    pwd
+    pm2 start app.js
 ```
