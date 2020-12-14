@@ -1,8 +1,11 @@
 # IAC Ansible
-Ansible is a IAC Configuration management tool.
+Ansible is a software tool which can provide automation in cloud-provisioning, configuration management, application deployment and intra-service orcheastration. An IAC tool.
 
 ## How it works
-
+- There are two categories of nodes, the main control node and managed nodes.
+  - The control node machine actually runs Ansible
+  - Managed nodes are machines which we want to change with Ansible. 
+- So we essentially set up a controller node and write ansible code/playbooks which will automate the process of provisioning our managed nodes.
 
 ## How to set it up
 - We are setting up our controller machine in aws. 
@@ -24,10 +27,6 @@ Ansible is a IAC Configuration management tool.
 [host_a]
 172.31.37.104 ansible_connection=ssh ansible_ssh_private_key_file=/home/ubuntu/.ssh/eng74mattawskey.pem
 ```
-
-
-## Main Sections
-
 
 ## Main commands
 - We can check our connection with the host by running the command:

@@ -3,7 +3,7 @@
 ---
 
 # Where we're installing the files
-- hosts: db_host
+- hosts: db_host_test
   gather_facts: yes # Collects info and returns it to you after playbook is run
   become: true # sudo
   handlers:
@@ -34,14 +34,14 @@
       content: |
         deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse
 
+  - name: Update sources list
+    command: apt-get update -y
+  
   - name: Install mongodb with all relevant packages
     apt:
-      name: 
-      - mongodb-org=3.2.20
-      - mongodb-org-server=3.2.20
-      - mongodb-org-mongos=3.2.20
-      - mongodb-org-tools=3.2.20
+      name: mongodb-org=3.2.20
       state: present
+      update_cache: yes
 
   - name: Remove the mongod.conf file
     file:
@@ -55,7 +55,7 @@
       state: link
     notify: Restart mongod
 
-  - name: Enable Start mongod
+  - name: Enable and Start mongod
     systemd: 
       name: mongod 
       state: started 
