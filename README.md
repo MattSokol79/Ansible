@@ -1,6 +1,8 @@
 # IAC Ansible
 Ansible is a software tool which can provide automation in cloud-provisioning, configuration management, application deployment and intra-service orcheastration. An IAC tool.
 
+[Additional Notes](https://github.com/MattSokol79/Ops_Notes/tree/main/Week_8_VPC_Continued/Day3_Ansible)
+
 ## How it works
 - There are two categories of nodes, the main control node and managed nodes.
   - The control node machine actually runs Ansible
