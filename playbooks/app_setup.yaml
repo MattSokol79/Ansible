@@ -7,7 +7,7 @@
   gather_facts: yes # Collects info and returns it to you after playbook is run
   become: true # sudo
   vars:
-    db_address: "172.31.35.17" # Private IP of DB host instance
+    db_address: "172.31.39.106" # Private IP of DB host instance
   handlers:
     - name: Restart Nginx
       service:

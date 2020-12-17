@@ -12,8 +12,8 @@ sudo pip install --upgrade pip -y
 
 # Installing 
 pip3 install awscli # AWS comman line client ---> Allows direct interaction with AWS via command line
-sudo pip install boto -y 
-sudo pip install boto3 -y
+sudo pip3 install boto -y 
+sudo pip3 install boto3 -y
 
 # Helper module
 sudo apt install tree

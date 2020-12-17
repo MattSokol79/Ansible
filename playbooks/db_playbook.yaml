@@ -4,7 +4,6 @@
 
 # Where we're installing the files
 - hosts: db_host_test
-  gather_facts: yes # Collects info and returns it to you after playbook is run
   become: true # sudo
   handlers:
     - name: Restart mongod
@@ -39,9 +38,8 @@
   
   - name: Install mongodb with all relevant packages
     apt:
-      name: mongodb-org=3.2.20
+      pkg: mongodb-org=3.2.20
       state: present
-      update_cache: yes
 
   - name: Remove the mongod.conf file
     file:
