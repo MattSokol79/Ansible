@@ -2,12 +2,12 @@
 
 ---
 
-# Where we're installing the files
-- hosts: app_host
+# Where we're installing the files -> IMPORTANT default is for AMIs!!!!!!
+- hosts: default
   gather_facts: yes # Collects info and returns it to you after playbook is run
   become: true # sudo
   vars:
-    db_address: "172.31.39.106" # Private IP of DB host instance
+    db_address: "172.31.35.17" # Private IP of DB host instance
   handlers:
     - name: Restart Nginx
       service:
@@ -15,7 +15,7 @@
         state: restarted
 
   # Setup the app
-  tasks: 
+  tasks:
   # Syncing app folder into the machine
   - name: Sync app folder
     synchronize:
@@ -29,30 +29,32 @@
 
   - name: Update sources list
     apt:
-      upgrade: yes
+      upgrade: "yes"
       update_cache: yes
-  
+      force_apt_get: yes
+
+  - name: Ensuring software-properties-common is installed
+    apt:
+      name: software-properties-common
+      state: present
+
   - name: Install git
     apt:
-      pkg: git 
+      pkg: git
       state: present
-  
-  - name: Install software properties
-    command: apt install software-properties-common -y
-    ignore_errors: true
 
   - name: Download nodejs dependencies from the web
     shell: curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
     ignore_errors: true
 
   - name: Install nodejs
-    apt: 
-      pkg: nodejs 
+    apt:
+      pkg: nodejs
       state: present
-  
+
   - name: Install nginx
-    apt: 
-      pkg: nginx 
+    apt:
+      pkg: nginx
       state: present
 
   - name: Install npm
@@ -69,8 +71,8 @@
       state: absent
 
   - name: Copy in new default file into sites-available
-    copy: 
-      src: /home/ubuntu/environment/app/nginx.default 
+    copy:
+      src: /home/ubuntu/environment/app/nginx.default
       dest: /etc/nginx/sites-available/default
     notify:
     - Restart Nginx
